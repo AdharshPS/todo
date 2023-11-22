@@ -3,22 +3,21 @@ import 'package:hive/hive.dart';
 
 class TodoContainer extends StatefulWidget {
   TodoContainer({
+    this.onDelete,
     super.key,
-    required this.title,
-    // required this.subTitle,
-    required this.checkValue,
+    required this.keyIndex,
   });
 
-  int title;
-  // int subTitle;
-  bool checkValue;
+  VoidCallback? onDelete;
+
+  int keyIndex;
 
   @override
   State<TodoContainer> createState() => _TodoContainerState();
 }
 
 class _TodoContainerState extends State<TodoContainer> {
-  var box = Hive.box('myBox');
+  var box = Hive.box('todoBox');
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +35,7 @@ class _TodoContainerState extends State<TodoContainer> {
               children: [
                 Text(
                   // box.get(widget.title),
-                  box.get(widget.title),
+                  box.get(widget.keyIndex)['text'],
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -51,15 +50,30 @@ class _TodoContainerState extends State<TodoContainer> {
                 // ),
               ],
             ),
-            Checkbox(
-              value: widget.checkValue,
-              onChanged: (value) {
-                widget.checkValue = value!;
-                print(box.get(widget.title));
+            Row(
+              children: [
+                Checkbox(
+                  value: box.get(widget.keyIndex)['isChecked'],
+                  onChanged: (value) {
+                    box.put(widget.keyIndex, {
+                      'text': box.get(widget.keyIndex)['text'],
+                      'isChecked': value
+                    });
 
-                setState(() {});
-              },
-            )
+                    setState(() {});
+                    print(widget.keyIndex);
+                  },
+                ),
+                IconButton(
+                  onPressed: () {
+                    box.delete(widget.keyIndex);
+                    widget.onDelete;
+                    setState(() {});
+                  },
+                  icon: Icon(Icons.delete),
+                ),
+              ],
+            ),
           ],
         ),
       ),

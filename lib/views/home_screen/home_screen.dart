@@ -13,18 +13,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     keysList = box.keys.toList();
-    // subKeyList = box.keys.toList();
     print(keysList);
 
-    // TODO: implement initState
     super.initState();
   }
 
-  var box = Hive.box('myBox');
+  var box = Hive.box('todoBox');
 
   List keysList = [];
-  List valuesList = [];
-  // List subKeyList = [];
 
   final titleController = TextEditingController();
   // final subTitleController = TextEditingController();
@@ -35,9 +31,10 @@ class _HomeScreenState extends State<HomeScreen> {
         separatorBuilder: (context, index) => SizedBox(height: 0),
         itemCount: keysList.length,
         itemBuilder: (context, index) => TodoContainer(
-          title: keysList[index],
-          // subTitle: subKeyList[index],
-          checkValue: false,
+          keyIndex: keysList[index],
+          onDelete: () {
+            keysList = box.keys.toList();
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -69,8 +66,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   ElevatedButton(
                     onPressed: () {
                       if (titleController.text.trim().isNotEmpty) {
-                        box.add(titleController.text.trim());
-                        // box.add(subTitleController.text.trim());
+                        box.add({
+                          'text': titleController.text.trim(),
+                          'isChecked': false
+                        });
                         keysList = box.keys.toList();
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -80,7 +79,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       }
 
-                      // subKeyList = box.keys.toList();
                       setState(() {});
                       titleController.clear();
                       Navigator.pop(context);

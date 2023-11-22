@@ -3,8 +3,9 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:todo_application/views/home_screen/home_screen.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-  var box = await Hive.openBox('myBox');
+  var box = await Hive.openBox('todoBox');
   runApp(MainScreen());
 }
 
